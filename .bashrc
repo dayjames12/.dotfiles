@@ -87,4 +87,7 @@ fi
 # Add ~/.local/bin to the PATH
 PATH="$HOME/.local/bin:$PATH"
 
-ATH="$HOME/.local/bin:$PATH"
+PATH="$HOME/.local/bin:$PATH"
+
+# Adding alias for better updating/cleaning git repo
+alias clean='clean_stage_func() { git fetch -ap && git pull && git branch -d $(git branch --merged="$1" | grep -v "$1") && git status; }; clean_stage_func'

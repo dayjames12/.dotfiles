@@ -1,0 +1,60 @@
+# alacritty.toml
+
+working_directory = "C:/Users/dayja/Development/Simplehuman"
+
+# Window Configuration
+[window]
+dimensions.columns = 120
+dimensions.lines = 40
+padding.x = 5
+padding.y = 5
+dynamic_padding = true
+decorations = "full"
+startup_mode = "Windowed"
+opacity = 0.8  # Set the opacity value between 0.0 and 1.0
+
+# Font Configuration
+[font]
+normal.family = "Consolas"
+normal.style = "Regular"
+bold.family = "Consolas"
+bold.style = "Bold"
+italic.family = "Consolas"
+italic.style = "Italic"
+size = 12.0
+offset.x = 0
+offset.y = 0
+glyph_offset.x = 0
+glyph_offset.y = 0
+
+# Color Configuration
+[colors]
+primary.background = '#1e1e1e'
+primary.foreground = '#d4d4d4'
+normal.black = '#1e1e1e'
+normal.red = '#ff5555'
+normal.green = '#50fa7b'
+normal.yellow = '#f1fa8c'
+normal.blue = '#6272a4'
+normal.magenta = '#ff79c6'
+normal.cyan = '#8be9fd'
+normal.white = '#d4d4d4'
+
+# Keyboard Bindings
+[keyboard]
+bindings = [
+  { key = "V", mods = "Control|Shift", action = "Paste" },
+  { key = "C", mods = "Control|Shift", action = "Copy" },
+  { key = "N", mods = "Control", action = "SpawnNewInstance" },
+  { key = "Q", mods = "Control", action = "Quit" },
+  { key = "Return", mods = "Alt", action = "ToggleFullscreen" }
+]
+
+# Cursor Configuration
+[cursor]
+style = "Block"
+unfocused_hollow = true
+
+# Mouse Configuration
+[mouse]
+hide_when_typing = true
