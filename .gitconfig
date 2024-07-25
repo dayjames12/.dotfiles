@@ -3,3 +3,5 @@
 [user]
 	name = James Day
 	email = dayjames12@gmail.com
+[push]
+	autoSetupRemote = true

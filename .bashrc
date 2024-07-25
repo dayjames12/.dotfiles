@@ -89,5 +89,63 @@ PATH="$HOME/.local/bin:$PATH"
 
 PATH="$HOME/.local/bin:$PATH"
 
-# Adding alias for better updating/cleaning git repo
+# Basic Git aliases
+alias gs='git status'
+alias ga='git add'
+alias gas='git add -u'
+alias gc='git commit -m'
+alias gp='git push'
+alias gpl='git pull'
+alias gd='git diff'
+alias gds='git diff --staged'
+alias gco='git checkout'
+alias gcon='git checkout -b'
+alias gb='git branch'
+alias gl='git log --oneline --graph --decorate'
+
+# Shortcut for fetching and pulling
+alias gfp='git fetch && git pull'
+
+# Show modified files in last commit
+alias glm='git log --name-only --pretty=format: --diff-filter=M | sed "/^$/d"'
+
+# Git stash shortcuts
+alias gst='git stash'
+alias gsta='git stash apply'
+alias gstp='git stash pop'
+alias gstl='git stash list'
+
+# Git reset hard - use with caution!
+alias grh='git reset --hard'
+
+# Git commit amend with no edit
+alias gca='git commit --amend --no-edit'
+
+# Git push force with lease (safer than force push)
+alias gpf='git push --force-with-lease'
+
+# Cleans up branchs already merged into target
 alias clean='clean_stage_func() { git fetch -ap && git pull && git branch -d $(git branch --merged="$1" | grep -v "$1") && git status; }; clean_stage_func'
+
+# Show current branch name
+alias gcb='git rev-parse --abbrev-ref HEAD'
+
+# List all branches sorted by last modified
+alias gbb='git for-each-ref --sort="-authordate" --format="%(authordate)%09%(objectname:short)%09%(refname)" refs/heads | sed -e "s-refs/heads/--"'
+
+# Undo last commit
+alias gundo='git reset HEAD~'
+
+# Interactive rebase with the given number of latest commits
+alias gri='f() { git rebase -i HEAD~$1; }; f'
+
+# Show verbose output about tags, branches, or remotes
+alias gtv='git tag | sort -V'
+alias gbv='git branch -v'
+alias grv='git remote -v'
+
+# alias just for the simplehuman repo to go home to the main dir of the project
+alias home='cd ~/Development/Simplehuman/simplehuman-IoT-backend-AWS/'
+
+alias reload_bash='source ~/.bashrc'
+
