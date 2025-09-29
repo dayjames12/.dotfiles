@@ -134,8 +134,14 @@ setup_wezterm() {
     # Create wezterm config directory
     mkdir -p "$wezterm_config_dir"
     
-    # Copy wezterm configuration
-    if [ -f "$DOTFILES_DIR/wezterm/wezterm.lua" ]; then
+    # Copy wezterm configuration - use minimal config for VMs
+    if [ -f "$DOTFILES_DIR/wezterm/wezterm-minimal.lua" ]; then
+        print_status "Installing minimal WezTerm configuration for VM compatibility..."
+        cp "$DOTFILES_DIR/wezterm/wezterm-minimal.lua" "$wezterm_config_dir/wezterm.lua"
+        print_success "WezTerm minimal configuration installed"
+        print_warning "Using minimal config for better VM compatibility"
+        print_status "For troubleshooting, see: $DOTFILES_DIR/wezterm/TROUBLESHOOTING.md"
+    elif [ -f "$DOTFILES_DIR/wezterm/wezterm.lua" ]; then
         print_status "Copying WezTerm configuration..."
         cp "$DOTFILES_DIR/wezterm/wezterm.lua" "$wezterm_config_dir/wezterm.lua"
         print_success "WezTerm configuration installed"

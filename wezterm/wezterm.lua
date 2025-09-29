@@ -228,25 +228,26 @@ config.keys = {
 -- Mouse Bindings
 -- ============================================================================
 
-config.mouse_bindings = {
-  -- Right click to paste
-  {
-    event = { Down = { streak = 1, button = 'Right' } },
-    mods = 'NONE',
-    action = act.PasteFrom 'Clipboard',
-  },
-  -- Scroll wheel to change font size
-  {
-    event = { Up = { streak = 1, button = 'WheelUp' } },
-    mods = 'CTRL',
-    action = act.IncreaseFontSize,
-  },
-  {
-    event = { Up = { streak = 1, button = 'WheelDown' } },
-    mods = 'CTRL',
-    action = act.DecreaseFontSize,
-  },
-}
+-- Mouse bindings disabled for VM compatibility
+-- config.mouse_bindings = {
+--   -- Right click to paste
+--   {
+--     event = { Down = { streak = 1, button = 'Right' } },
+--     mods = 'NONE',
+--     action = act.PasteFrom 'Clipboard',
+--   },
+--   -- Scroll wheel to change font size
+--   {
+--     event = { Up = { streak = 1, button = 'WheelUp' } },
+--     mods = 'CTRL',
+--     action = act.IncreaseFontSize,
+--   },
+--   {
+--     event = { Up = { streak = 1, button = 'WheelDown' } },
+--     mods = 'CTRL',
+--     action = act.DecreaseFontSize,
+--   },
+-- }
 
 -- ============================================================================
 -- Launch Configuration
