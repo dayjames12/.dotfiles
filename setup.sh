@@ -116,7 +116,8 @@ setup_neovim() {
     # Copy nvim configuration
     if [ -d "$DOTFILES_DIR/nvim" ]; then
         print_status "Copying Neovim configuration..."
-        cp -r "$DOTFILES_DIR/nvim"/* "$nvim_config_dir/"
+        # Copy all files and directories from nvim, excluding .git
+        find "$DOTFILES_DIR/nvim" -mindepth 1 -maxdepth 1 -not -name '.git' -exec cp -r {} "$nvim_config_dir/" \;
         print_success "Neovim configuration installed"
     else
         print_error "Neovim configuration not found in dotfiles"
