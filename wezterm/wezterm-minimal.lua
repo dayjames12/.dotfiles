@@ -73,8 +73,8 @@ config.keys = {
 
 -- Windows specific settings
 if wezterm.target_triple == 'x86_64-pc-windows-msvc' then
-  -- Set default shell to Git Bash
-  config.default_prog = { 'bash' }
+  -- Set default shell to Git Bash (with full path for VM compatibility)
+  config.default_prog = { 'C:/Program Files/Git/bin/bash.exe' }
 end
 
 -- ============================================================================
@@ -89,5 +89,9 @@ config.scrollback_lines = 5000
 
 -- Force software rendering for VM compatibility
 config.front_end = 'Software'
+
+-- Additional VM compatibility settings
+config.enable_wayland = false
+config.enable_kitty_graphics = false
 
 return config

@@ -25,15 +25,24 @@ Or use the config option:
 wezterm --config 'front_end="Software"'
 ```
 
-### 2. Cursor Style Configuration Error
+### 2. Bash Not Found Error
+
+If you see "The system cannot find the file specified" when starting WezTerm, it's trying to launch bash but can't find it.
+
+**Solution:**
+The minimal config now uses the full path to Git Bash: `C:/Program Files/Git/bin/bash.exe`
+
+If you have Git installed in a different location, update the path in the config.
+
+### 3. Cursor Style Configuration Error
 
 If you see errors about invalid cursor style variants (like `Block`), the minimal configuration removes cursor style settings for compatibility.
 
-### 3. Mouse Bindings Configuration Error
+### 4. Mouse Bindings Configuration Error
 
 If you see errors about invalid mouse button variants, the minimal configuration is automatically used which disables mouse bindings for compatibility.
 
-### 4. VM-Specific Issues
+### 5. VM-Specific Issues
 
 For virtual machines, the setup script automatically installs the minimal WezTerm configuration (`wezterm-minimal.lua`) which:
 - Removes advanced features that may cause issues
@@ -41,7 +50,7 @@ For virtual machines, the setup script automatically installs the minimal WezTer
 - Disables mouse bindings
 - Focuses on core functionality
 
-### 5. Alternative Terminal Emulators
+### 6. Alternative Terminal Emulators
 
 If WezTerm continues to have issues on your VM, consider these alternatives:
 
@@ -55,7 +64,7 @@ If WezTerm continues to have issues on your VM, consider these alternatives:
 - PowerShell
 - Command Prompt
 
-### 6. Manual Configuration
+### 7. Manual Configuration
 
 If you need to manually switch configurations:
 
@@ -67,7 +76,7 @@ cp ~/.dotfiles/wezterm/wezterm-minimal.lua ~/.config/wezterm/wezterm.lua
 cp ~/.dotfiles/wezterm/wezterm.lua ~/.config/wezterm/wezterm.lua
 ```
 
-### 7. Checking WezTerm Version
+### 8. Checking WezTerm Version
 
 ```bash
 wezterm --version
@@ -75,7 +84,7 @@ wezterm --version
 
 Make sure you have a recent version. Older versions may have compatibility issues.
 
-### 8. Logs and Debugging
+### 9. Logs and Debugging
 
 Enable verbose logging:
 ```bash
