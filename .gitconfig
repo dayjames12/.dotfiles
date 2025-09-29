@@ -5,3 +5,5 @@
 	email = dayjames12@gmail.com
 [push]
 	autoSetupRemote = true
+[safe]
+	directory = C:/Users/dayja/.dotfiles/nvim

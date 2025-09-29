@@ -90,9 +90,11 @@ PATH="$HOME/.local/bin:$PATH"
 PATH="$HOME/.local/bin:$PATH"
 
 # Basic Git aliases
-alias gs='git status'
+alias gs='git status -uno'
+alias gss='git status'
 alias ga='git add'
 alias gas='git add -u'
+alias gax='git add . && git reset -- "*service.js"'
 alias gc='git commit -m'
 alias gp='git push'
 alias gpl='git pull'
@@ -102,6 +104,8 @@ alias gco='git checkout'
 alias gcon='git checkout -b'
 alias gb='git branch'
 alias gl='git log --oneline --graph --decorate'
+alias grs='git restore --staged'
+alias grsu='git restore --staged utils/env.service.js'
 
 # Shortcut for fetching and pulling
 alias gfp='git fetch && git pull'
@@ -145,7 +149,13 @@ alias gbv='git branch -v'
 alias grv='git remote -v'
 
 # alias just for the simplehuman repo to go home to the main dir of the project
-alias home='cd ~/Development/Simplehuman/simplehuman-IoT-backend-AWS/'
+alias home='cd ~/Development/Simplehuman/simplehuman-IoT-backend-AWS/ && clear'
+
+# Fixing issue where bash cannot find aws sam 
+alias sam="/c/Program\ Files/Amazon/AWSSAMCLI/bin/sam.cmd"
+
+# Node 
+alias ni='node index'
 
 alias reload_bash='source ~/.bashrc'
 
