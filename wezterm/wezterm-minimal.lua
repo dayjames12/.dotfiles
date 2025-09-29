@@ -84,7 +84,10 @@ end
 -- Enable scrollback
 config.scrollback_lines = 5000
 
--- Set cursor style
-config.default_cursor_style = 'Block'
+-- Set cursor style (removed for compatibility)
+-- config.default_cursor_style = 'SteadyBlock'
+
+-- Force software rendering for VM compatibility
+config.front_end = 'Software'
 
 return config
