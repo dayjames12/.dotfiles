@@ -1,7 +1,5 @@
 # alacritty.toml
 
-working_directory = "C:/Users/dayja/Development/Simplehuman"
-
 # Window Configuration
 [window]
 dimensions.columns = 120

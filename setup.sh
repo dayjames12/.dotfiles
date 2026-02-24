@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Personal Dotfiles Setup Script
-# One-command setup for entire development environment
+# Cross-platform: macOS (zsh) / Linux (bash)
 
 set -e
 
@@ -11,7 +11,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 PURPLE='\033[0;35m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
 # Configuration
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -19,237 +19,170 @@ BACKUP_DIR="$HOME/.dotfiles-backup-$(date +%Y%m%d-%H%M%S)"
 PLATFORM=""
 
 # Default options
-INSTALL_NEOVIM=false
-INSTALL_WEZTERM=false
-INSTALL_DEPENDENCIES=false
 BACKUP_EXISTING=true
-VERBOSE=false
 
-# Function to print colored output
-print_status() {
-    echo -e "${BLUE}[INFO]${NC} $1"
-}
-
-print_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
-}
-
-print_warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
-}
-
-print_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-}
-
-print_header() {
+# Colored output helpers
+print_status()  { echo -e "${BLUE}[INFO]${NC} $1"; }
+print_success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
+print_warning() { echo -e "${YELLOW}[WARNING]${NC} $1"; }
+print_error()   { echo -e "${RED}[ERROR]${NC} $1"; }
+print_header()  {
     echo -e "${PURPLE}================================${NC}"
     echo -e "${PURPLE} $1${NC}"
     echo -e "${PURPLE}================================${NC}"
 }
 
-# Function to detect platform
+command_exists() { command -v "$1" >/dev/null 2>&1; }
+
+# Detect platform
 detect_platform() {
-    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        if command -v apt-get &> /dev/null; then
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        PLATFORM="macos"
+    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        if command_exists apt-get; then
             PLATFORM="ubuntu"
-        elif command -v yum &> /dev/null; then
-            PLATFORM="rhel"
-        elif command -v pacman &> /dev/null; then
+        elif command_exists pacman; then
             PLATFORM="arch"
         else
             PLATFORM="linux"
         fi
-    elif [[ "$OSTYPE" == "darwin"* ]]; then
-        PLATFORM="macos"
-    elif [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
-        PLATFORM="windows"
     else
         PLATFORM="unknown"
     fi
-    
     print_status "Detected platform: $PLATFORM"
 }
 
-# Function to check if command exists
-command_exists() {
-    command -v "$1" >/dev/null 2>&1
-}
-
-# Function to backup existing configurations
+# Backup existing configs before overwriting
 backup_existing() {
-    if [ "$BACKUP_EXISTING" = false ]; then
-        return
-    fi
-    
+    if [ "$BACKUP_EXISTING" = false ]; then return; fi
+
     print_header "Backing Up Existing Configurations"
-    
     mkdir -p "$BACKUP_DIR"
-    
-    # Backup existing configurations
+
     local configs=(
         "$HOME/.config/nvim"
-        "$HOME/.config/wezterm"
         "$HOME/.bashrc"
+        "$HOME/.zshrc"
+        "$HOME/.shell_common"
         "$HOME/.gitconfig"
     )
-    
+
     for config in "${configs[@]}"; do
-        if [ -e "$config" ]; then
+        if [ -e "$config" ] || [ -L "$config" ]; then
             print_status "Backing up $config"
-            cp -r "$config" "$BACKUP_DIR/"
+            cp -rL "$config" "$BACKUP_DIR/" 2>/dev/null || true
         fi
     done
-    
+
     print_success "Backup created at: $BACKUP_DIR"
 }
 
-# Function to setup Neovim
-setup_neovim() {
-    print_header "Setting Up Neovim"
-    
-    local nvim_config_dir="$HOME/.config/nvim"
-    
-    # Create nvim config directory
-    mkdir -p "$nvim_config_dir"
-    
-    # Copy nvim configuration
-    if [ -d "$DOTFILES_DIR/nvim" ]; then
-        print_status "Copying Neovim configuration..."
-        # Copy all files and directories from nvim, excluding .git
-        find "$DOTFILES_DIR/nvim" -mindepth 1 -maxdepth 1 -not -name '.git' -exec cp -r {} "$nvim_config_dir/" \;
-        print_success "Neovim configuration installed"
-    else
-        print_error "Neovim configuration not found in dotfiles"
-        return 1
+# Create a symlink, removing any existing file/link first
+make_link() {
+    local src="$1"
+    local dest="$2"
+    if [ -e "$dest" ] || [ -L "$dest" ]; then
+        rm -rf "$dest"
     fi
+    ln -s "$src" "$dest"
+    print_success "Linked $dest -> $src"
 }
 
-# Function to setup WezTerm
-setup_wezterm() {
-    print_header "Setting Up WezTerm"
-    
-    local wezterm_config_dir="$HOME/.config/wezterm"
-    
-    # Create wezterm config directory
-    mkdir -p "$wezterm_config_dir"
-    
-    # Copy wezterm configuration - use minimal config for VMs
-    if [ -f "$DOTFILES_DIR/wezterm/wezterm-minimal.lua" ]; then
-        print_status "Installing minimal WezTerm configuration for VM compatibility..."
-        cp "$DOTFILES_DIR/wezterm/wezterm-minimal.lua" "$wezterm_config_dir/wezterm.lua"
-        print_success "WezTerm minimal configuration installed"
-        print_warning "Using minimal config for better VM compatibility"
-        print_status "For troubleshooting, see: $DOTFILES_DIR/wezterm/TROUBLESHOOTING.md"
-    elif [ -f "$DOTFILES_DIR/wezterm/wezterm.lua" ]; then
-        print_status "Copying WezTerm configuration..."
-        cp "$DOTFILES_DIR/wezterm/wezterm.lua" "$wezterm_config_dir/wezterm.lua"
-        print_success "WezTerm configuration installed"
-    else
-        print_error "WezTerm configuration not found in dotfiles"
-        return 1
-    fi
-}
-
-# Function to setup shell configuration
+# Setup shell configs (symlinks)
 setup_shell() {
     print_header "Setting Up Shell Configuration"
-    
-    # Copy bashrc
-    if [ -f "$DOTFILES_DIR/.bashrc" ]; then
-        print_status "Installing .bashrc..."
-        cp "$DOTFILES_DIR/.bashrc" "$HOME/.bashrc"
-        print_success ".bashrc installed"
-    fi
-    
-    # Copy gitconfig
-    if [ -f "$DOTFILES_DIR/.gitconfig" ]; then
-        print_status "Installing .gitconfig..."
-        cp "$DOTFILES_DIR/.gitconfig" "$HOME/.gitconfig"
-        print_success ".gitconfig installed"
+
+    # Shared config (both platforms)
+    make_link "$DOTFILES_DIR/.shell_common" "$HOME/.shell_common"
+    make_link "$DOTFILES_DIR/.gitconfig" "$HOME/.gitconfig"
+
+    if [ "$PLATFORM" = "macos" ]; then
+        make_link "$DOTFILES_DIR/.zshrc" "$HOME/.zshrc"
+        print_status "Linked .zshrc for macOS"
+    else
+        make_link "$DOTFILES_DIR/.bashrc" "$HOME/.bashrc"
+        print_status "Linked .bashrc for Linux"
     fi
 }
 
-# Function to show usage
+# Setup Neovim: install if needed, then symlink config
+setup_neovim() {
+    print_header "Setting Up Neovim"
+
+    # Install neovim if not present
+    if ! command_exists nvim; then
+        print_status "Installing Neovim..."
+        if [ "$PLATFORM" = "macos" ]; then
+            brew install neovim
+        elif [ "$PLATFORM" = "ubuntu" ]; then
+            sudo apt-get update && sudo apt-get install -y neovim
+        elif [ "$PLATFORM" = "arch" ]; then
+            sudo pacman -S --noconfirm neovim
+        else
+            print_warning "Please install Neovim manually for your platform"
+        fi
+    else
+        print_status "Neovim already installed: $(nvim --version | head -1)"
+    fi
+
+    # Symlink nvim config
+    mkdir -p "$HOME/.config"
+    make_link "$DOTFILES_DIR/nvim" "$HOME/.config/nvim"
+}
+
+# Usage
 show_usage() {
     echo "Personal Dotfiles Setup Script"
     echo ""
     echo "Usage: $0 [OPTIONS]"
     echo ""
     echo "Options:"
-    echo "  -h, --help              Show this help message"
-    echo "  --no-backup             Skip backing up existing configurations"
-    echo "  --all                   Setup all configurations"
-    echo ""
-    echo "Examples:"
-    echo "  $0                      # Basic setup (copy configs only)"
-    echo "  $0 --all               # Full setup"
+    echo "  -h, --help        Show this help message"
+    echo "  --no-backup       Skip backing up existing configurations"
 }
 
-# Function to parse command line arguments
+# Parse args
 parse_args() {
     while [[ $# -gt 0 ]]; do
         case $1 in
-            -h|--help)
-                show_usage
-                exit 0
-                ;;
-            --no-backup)
-                BACKUP_EXISTING=false
-                shift
-                ;;
-            --all)
-                INSTALL_NEOVIM=true
-                INSTALL_WEZTERM=true
-                shift
-                ;;
-            *)
-                print_error "Unknown option: $1"
-                show_usage
-                exit 1
-                ;;
+            -h|--help)   show_usage; exit 0 ;;
+            --no-backup) BACKUP_EXISTING=false; shift ;;
+            *)           print_error "Unknown option: $1"; show_usage; exit 1 ;;
         esac
     done
 }
 
-# Main setup function
+# Main
 main() {
     print_header "Personal Dotfiles Setup"
     print_status "Starting setup from: $DOTFILES_DIR"
-    
-    # Detect platform
+
     detect_platform
-    
-    # Parse command line arguments
     parse_args "$@"
-    
-    # Backup existing configurations
     backup_existing
-    
-    # Setup configurations
     setup_neovim
-    setup_wezterm
     setup_shell
-    
-    # Final success message
+
     print_header "Setup Complete!"
     print_success "Your development environment is ready!"
     echo ""
-    echo "Next steps:"
-    echo "  1. Restart your terminal or run: source ~/.bashrc"
-    echo "  2. Start Neovim: nvim"
-    echo "  3. Start WezTerm: wezterm (if installed)"
-    echo ""
     echo "Configuration locations:"
-    echo "  - Neovim: ~/.config/nvim/"
-    echo "  - WezTerm: ~/.config/wezterm/"
-    echo "  - Shell: ~/.bashrc"
-    echo "  - Git: ~/.gitconfig"
-    echo ""
-    if [ "$BACKUP_EXISTING" = true ]; then
-        echo "Backup created at: $BACKUP_DIR"
+    echo "  - Neovim:  ~/.config/nvim -> $DOTFILES_DIR/nvim"
+    echo "  - Git:     ~/.gitconfig -> $DOTFILES_DIR/.gitconfig"
+    if [ "$PLATFORM" = "macos" ]; then
+        echo "  - Shell:   ~/.zshrc -> $DOTFILES_DIR/.zshrc"
+    else
+        echo "  - Shell:   ~/.bashrc -> $DOTFILES_DIR/.bashrc"
     fi
+    echo "  - Shared:  ~/.shell_common -> $DOTFILES_DIR/.shell_common"
+    echo ""
+    echo "Next steps:"
+    if [ "$PLATFORM" = "macos" ]; then
+        echo "  1. Restart your terminal or run: source ~/.zshrc"
+    else
+        echo "  1. Restart your terminal or run: source ~/.bashrc"
+    fi
+    echo "  2. Start Neovim: nvim (plugins will auto-install)"
 }
 
-# Run main function with all arguments
 main "$@"

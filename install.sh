@@ -5,23 +5,21 @@
 
 set -e
 
-echo "��� Installing Personal Dotfiles..."
+echo "Installing Personal Dotfiles..."
 
-# Clone the repository
 DOTFILES_DIR="$HOME/.dotfiles"
 if [ -d "$DOTFILES_DIR" ]; then
-    echo "��� Updating existing dotfiles..."
+    echo "Updating existing dotfiles..."
     cd "$DOTFILES_DIR"
     git pull
 else
-    echo "��� Cloning dotfiles repository..."
+    echo "Cloning dotfiles repository..."
     git clone https://github.com/dayjames12/.dotfiles.git "$DOTFILES_DIR"
 fi
 
-# Run the setup script
 cd "$DOTFILES_DIR"
 chmod +x setup.sh
-./setup.sh --all
+./setup.sh
 
-echo "✅ Installation complete!"
-echo "��� Please restart your terminal or run: source ~/.bashrc"
+echo "Installation complete!"
+echo "Please restart your terminal or source your shell config."

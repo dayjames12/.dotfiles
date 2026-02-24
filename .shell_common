@@ -1,0 +1,53 @@
+# ~/.shell_common
+# Shared aliases and settings sourced by both .zshrc and .bashrc
+
+# Add ~/.local/bin to PATH
+export PATH="$HOME/.local/bin:$PATH"
+
+# ─── Git Aliases ──────────────────────────────────────────────
+
+alias gs='git status -uno'
+alias gss='git status'
+alias ga='git add'
+alias gas='git add -u'
+alias gc='git commit -m'
+alias gp='git push'
+alias gpl='git pull'
+alias gd='git diff'
+alias gds='git diff --staged'
+alias gco='git checkout'
+alias gcon='git checkout -b'
+alias gb='git branch'
+alias gl='git log --oneline --graph --decorate'
+alias grs='git restore --staged'
+alias gfp='git fetch && git pull'
+alias glm='git log --name-only --pretty=format: --diff-filter=M | sed "/^$/d"'
+alias gst='git stash'
+alias gsta='git stash apply'
+alias gstp='git stash pop'
+alias gstl='git stash list'
+alias grh='git reset --hard'
+alias gca='git commit --amend --no-edit'
+alias gpf='git push --force-with-lease'
+alias clean='clean_stage_func() { git fetch -ap && git pull && git branch -d $(git branch --merged="$1" | grep -v "$1") && git status; }; clean_stage_func'
+alias gcb='git rev-parse --abbrev-ref HEAD'
+alias gbb='git for-each-ref --sort="-authordate" --format="%(authordate)%09%(objectname:short)%09%(refname)" refs/heads | sed -e "s-refs/heads/--"'
+alias gundo='git reset HEAD~'
+alias gri='f() { git rebase -i HEAD~$1; }; f'
+alias gtv='git tag | sort -V'
+alias gbv='git branch -v'
+alias grv='git remote -v'
+
+# ─── General Aliases ─────────────────────────────────────────
+
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+alias ni='node index'
+
+# Reload shell config (works for both bash and zsh)
+if [ -n "$ZSH_VERSION" ]; then
+    alias reload='source ~/.zshrc'
+elif [ -n "$BASH_VERSION" ]; then
+    alias reload='source ~/.bashrc'
+fi
